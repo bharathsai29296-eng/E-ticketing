@@ -7,64 +7,46 @@ pipeline {
 
     stages {
 
-        stage('Clean') {
+        stage('clean') {
             steps {
-                bat 'mvn clean'
+                bat "mvn clean"
             }
         }
 
-        stage('Build') {
+        stage('install') {
             steps {
-                bat 'mvn install'
+                bat "mvn install"
+            }
+        }
+
+        stage('test') {
+            steps {
+                bat "mvn test"
+            }
+        }
+
+        stage('package') {
+            steps {
+                bat "mvn package"
             }
         }
     }
 
     post {
-
         success {
             emailext(
-                to: 'bharathkalva29296@gmail.com',
-                subject: "BUILD SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-Hello,
-
-Your Jenkins build completed successfully!
-
-Job Name: ${env.JOB_NAME}
-Build Number: ${env.BUILD_NUMBER}
-Build Status: SUCCESS
-
-Build URL: ${env.BUILD_URL}
-
-Regards,
-Jenkins CI/CD
-"""
+                to: 'bharathsai29296@gmail.com',
+                subject: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Build ${env.BUILD_NUMBER} completed successfully.\n\n${env.BUILD_URL}"
             )
         }
 
         failure {
             emailext(
-                to: 'bharathkalva29296@gmail.com',
-                subject: "BUILD FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-Hello,
-
-Your Jenkins build has FAILED!
-
-Job Name: ${env.JOB_NAME}
-Build Number: ${env.BUILD_NUMBER}
-Build Status: FAILURE
-
-Please check the Jenkins console output to identify the error.
-
-Build URL: ${env.BUILD_URL}
-
-Regards,
-Jenkins CI/CD
-"""
+                to: 'bharathsai29296@gmail.com',
+                subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Build ${env.BUILD_NUMBER} failed.\n\n${env.BUILD_URL}"
             )
         }
-
     }
 }
